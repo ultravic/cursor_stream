@@ -1,0 +1,3 @@
+PyAutoGUI==0.9.42
+xlib==0.21
+
