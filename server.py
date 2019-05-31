@@ -44,17 +44,20 @@ def connection(PORT, GROUP, TTL):
 
 
 def on_move(x, y):
+    global mouse_position 
     mouse_position = (x,y)
     print('Pointer moved to {0}'.format(
         (x, y)))
 
 def on_click(x, y, button, pressed):
+    global mouse_pressed 
     mouse_pressed = pressed
     print('{0} at {1}'.format(
         'Pressed' if pressed else 'Released',
         (x, y)))
 
 def on_scroll(x, y, dx, dy):
+    global mouse_scrolled 
     mouse_scrolled = dy 
     print('Scrolled {0} at {1}'.format(
         'down' if dy < 0 else 'up',
@@ -81,6 +84,9 @@ def init(argv):
         grp = DEFAULT_MCAST_GRP
 
     sock = connection(port, grp, ttl)
+    global mouse_pressed
+    global mouse_position
+    global mouse_scrolled 
     mouse_pressed = False
     mouse_position = (0,0)
     mouse_scrolled = False
