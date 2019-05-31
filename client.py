@@ -64,7 +64,7 @@ def init(argv):
             data = pickle.loads(received[0])
 
             # For debug purposes
-            positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['X_pos']).rjust(4) + ' Y: ' + str(data['Y_pos']).rjust(4)
+            positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
             print(positionStr, end='')
             print('\b' * len(positionStr), end='', flush=True)
     except KeyboardInterrupt:
