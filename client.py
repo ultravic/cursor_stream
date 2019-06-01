@@ -5,6 +5,7 @@ import struct
 import logging
 import pickle
 import sys
+from Tkinter import *
 
 # Default variables
 DEFAULT_MCAST_GRP = '224.1.1.1'
@@ -15,13 +16,16 @@ MESSAGES = {
 }
 
 # Connection initialization function
+
+
 def connection(HOST, PORT, GROUP):
     client_name = socket.gethostname()
     client = socket.gethostbyname(client_name)
     server = socket.gethostbyname(HOST)
 
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock = socket.socket(
+            socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     except:
         print("Erro ao criar socket")
@@ -38,6 +42,7 @@ def connection(HOST, PORT, GROUP):
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     return sock
+
 
 def init(argv):
     if '--help' in argv or '-h' not in argv:
@@ -57,6 +62,14 @@ def init(argv):
 
     sock = connection(host, port, grp)
 
+    master = Tk()
+
+    w = Canvas(master, width=200, height=100)
+    w.pack()
+
+    w.create_line(0, 0, 200, 100)
+    w.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
+
     # Receive data until CTRL + C
     try:
         while True:
@@ -64,11 +77,13 @@ def init(argv):
             data = pickle.loads(received[0])
 
             # For debug purposes
-            positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
+            positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position']
+                                                                [0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
             print(positionStr, end='')
             print('\b' * len(positionStr), end='', flush=True)
     except KeyboardInterrupt:
         print('\nFinalizando cliente...')
         exit(1)
+
 
 init(sys.argv)
