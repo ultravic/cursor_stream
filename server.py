@@ -1,12 +1,15 @@
 #!python3
 
 import socket
-import pyautogui
 import logging
 import pickle
 import sys
 import time
-
+# Heatmap librarys
+import plotly.plotly as ply
+import plotly.graph_objs as go
+# Cursor librarys
+import pyautogui
 from pynput import mouse, keyboard
 from pynput.mouse import Button, Controller
 
@@ -18,8 +21,14 @@ MESSAGES = {
     'usage': '<server> [[-p <port>], [-t <ttl>], [-g <group>]]' 
 }
 
-
-global mouse_pressed, mouse_position, mouse_scrolled
+# Packet structure
+data = {
+    'id'    : 0,
+    'mouse_position' : (0,0),
+    'mouse_pressed' : False,
+    'mouse_scrolled' : False,
+    'screen_size' : (0, 0),
+}
 
 # Connection initialization function
 def connection(PORT, GROUP, TTL):
@@ -44,27 +53,29 @@ def connection(PORT, GROUP, TTL):
 
 
 def on_move(x, y):
-    global mouse_position 
-    mouse_position = (x,y)
-    print('Pointer moved to {0}'.format(
-        (x, y)))
+    global data
+    data['mouse_position'] = (x,y)
+    # print('Pointer moved to {0}'.format(
+    #     (x, y)))
 
 def on_click(x, y, button, pressed):
-    global mouse_pressed 
-    mouse_pressed = pressed
-    print('{0} at {1}'.format(
-        'Pressed' if pressed else 'Released',
-        (x, y)))
+    global data
+    data['mouse_pressed'] = pressed
+    # print('{0} at {1}'.format(
+    #     'Pressed' if pressed else 'Released',
+    #     (x, y)))
 
 def on_scroll(x, y, dx, dy):
-    global mouse_scrolled 
-    mouse_scrolled = dy 
-    print('Scrolled {0} at {1}'.format(
-        'down' if dy < 0 else 'up',
-        (x, y)))
-    print('dy {0}'.format(dy))
+    global data
+    data['mouse_scrolled'] = dy
+    # print('Scrolled {0} at {1}'.format(
+    #     'down' if dy < 0 else 'up',
+    #     (x, y)))
+    # print('dy {0}'.format(dy))
 
 def init(argv):
+    global data 
+
     if '--help' in argv:
         print('Usage: ' + MESSAGES['usage'])
         exit(0)
@@ -84,34 +95,23 @@ def init(argv):
         grp = DEFAULT_MCAST_GRP
 
     sock = connection(port, grp, ttl)
-    global mouse_pressed
-    global mouse_position
-    global mouse_scrolled 
-    mouse_pressed = False
-    mouse_position = (0,0)
-    mouse_scrolled = False
 
     # Send data until CTRL + C
     try:
         counter = 0
-        # # # Collect events until released
+        # Collect events until released
         listener = mouse.Listener(
-            on_move=on_move,
-            on_click=on_click,
-            on_scroll=on_scroll)
+                on_move=on_move, 
+                on_click=on_click, 
+                on_scroll=on_scroll)
         listener.start()
-        
+
         screen_w, screen_h = pyautogui.size()
+        data['screen_size'] = (screen_w, screen_h)
 
         while True:
             time.sleep(0.01)
-            data = {
-                'id'    : counter,
-                'mouse_position' : mouse_position,
-                'mouse_pressed' : mouse_pressed,
-                'mouse_scrolled' : mouse_scrolled,
-                'screen_size' : (screen_w, screen_h),
-            }
+            data['id'] = counter
             sock.sendto(pickle.dumps(data), (grp, port))
             counter += 1
     except KeyboardInterrupt:
