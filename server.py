@@ -5,9 +5,6 @@ import logging
 import pickle
 import sys
 import time
-# Heatmap librarys
-import plotly.plotly as ply
-import plotly.graph_objs as go
 # Cursor librarys
 import pyautogui
 from pynput import mouse, keyboard

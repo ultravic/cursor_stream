@@ -6,6 +6,13 @@ import logging
 import pickle
 import sys
 
+# Library for graphics
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+import scipy.ndimage.filters as filters
+
 # Default variables
 DEFAULT_MCAST_GRP = '224.1.1.1'
 DEFAULT_MCAST_PORT = 5007
@@ -13,6 +20,7 @@ IS_ALL_GROUPS = True
 MESSAGES = {
     'usage': '<client> [[-h <server>], [-p <port>], [-g <group>]]'
 }
+
 
 # Connection initialization function
 def connection(HOST, PORT, GROUP):
@@ -39,6 +47,17 @@ def connection(HOST, PORT, GROUP):
 
     return sock
 
+def plot(data, title, save_path):
+    colors = [(0, 0, 1), (0, 1, 1), (0, 1, 0.75), (0, 1, 0), (0.75, 1, 0),
+              (1, 1, 0), (1, 0.8, 0), (1, 0.7, 0), (1, 0, 0)]
+
+    cm = LinearSegmentedColormap.from_list('sample', colors)
+
+    plt.imshow(data, cmap=cm)
+    plt.colorbar()
+    plt.title(title)
+    plt.show()
+
 def init(argv):
     if '--help' in argv or '-h' not in argv:
         print('Usage: ' + MESSAGES['usage'])
@@ -59,15 +78,31 @@ def init(argv):
 
     # Receive data until CTRL + C
     try:
+        packets = []
         while True:
             received = sock.recvfrom(4096)
             data = pickle.loads(received[0])
 
-            # For debug purposes
+            packets.append(data)
+            # For debug purposes
             positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
             print(positionStr, end='')
             print('\b' * len(positionStr), end='', flush=True)
     except KeyboardInterrupt:
+        # Create a base array
+        grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
+        grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
+
+        # Update pixels
+        for packet in packets:
+            grid[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+
+        # Add effect filter
+        grid = filters.gaussian_filter(grid, sigma=10)
+        
+        # Plot the graphics
+        plot(grid, 'Sample plot', 'sample.jpg')
+
         print('\nFinalizando cliente...')
         exit(1)
 
