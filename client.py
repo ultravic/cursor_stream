@@ -8,7 +8,6 @@ import sys
 
 # Library for graphics
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import scipy.ndimage.filters as filters
@@ -48,13 +47,15 @@ def connection(HOST, PORT, GROUP):
     return sock
 
 def plot(data, title, save_path):
-    colors = [(0, 0, 1), (0, 1, 1), (0, 1, 0.75), (0, 1, 0), (0.75, 1, 0),
+    colors = [(1, 1, 1), (0, 1, 1), (0, 1, 0.75), (0, 1, 0), (0.75, 1, 0),
               (1, 1, 0), (1, 0.8, 0), (1, 0.7, 0), (1, 0, 0)]
 
     cm = LinearSegmentedColormap.from_list('sample', colors)
 
     plt.imshow(data, cmap=cm)
     plt.colorbar()
+    plt.xlabel("Width")
+    plt.ylabel("Height")
     plt.title(title)
     plt.show()
 
@@ -79,9 +80,28 @@ def init(argv):
     # Receive data until CTRL + C
     try:
         packets = []
+        missing = []
+        off_order = []
+        packet_counter = 0
+
+        received = sock.recvfrom(4096)
+        data = pickle.loads(received[0])
+
+        packets.append(data)
+        packet_counter = data['id']
         while True:
             received = sock.recvfrom(4096)
             data = pickle.loads(received[0])
+
+            if data['id'] != packet_counter + 1:
+                missing.append(data)
+                print("Missing packet %d\n", packet_counter + 1)
+                packet_counter = data['id']
+            else:
+                packet_counter += 1
+            if data['id'] < packet_counter:
+                off_order.append(data)
+                print("Out of order packet %d\n", data['id'])
 
             packets.append(data)
             # For debug purposes
@@ -92,16 +112,23 @@ def init(argv):
         # Create a base array
         grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
         grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
+        grid_pos = grid.copy()
+        grid_scr = grid.copy()
 
         # Update pixels
         for packet in packets:
-            grid[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+            grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+            if packet['mouse_scrolled']:
+                grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+
 
         # Add effect filter
-        grid = filters.gaussian_filter(grid, sigma=10)
+        grid_pos = filters.gaussian_filter(grid_pos, sigma=10)
+        grid_scr = filters.gaussian_filter(grid_scr, sigma=10)
         
         # Plot the graphics
-        plot(grid, 'Sample plot', 'sample.jpg')
+        plot(grid_pos, 'Cursor Heatmap', 'cheat.jpg')
+        plot(grid_scr, 'Scroll Heatmap', 'sheat.jpg')
 
         print('\nFinalizando cliente...')
         exit(1)

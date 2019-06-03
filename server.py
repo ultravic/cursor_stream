@@ -64,7 +64,7 @@ def on_click(x, y, button, pressed):
 
 def on_scroll(x, y, dx, dy):
     global data
-    data['mouse_scrolled'] = dy
+    data['mouse_scrolled'] = True
     # print('Scrolled {0} at {1}'.format(
     #     'down' if dy < 0 else 'up',
     #     (x, y)))
@@ -105,11 +105,13 @@ def init(argv):
 
         screen_w, screen_h = pyautogui.size()
         data['screen_size'] = (screen_w, screen_h)
+        data['id'] = counter
 
         while True:
-            time.sleep(0.01)
-            data['id'] = counter
+            time.sleep(0.0001)
             sock.sendto(pickle.dumps(data), (grp, port))
+            data['id'] = counter
+            data['mouse_scrolled'] = False
             counter += 1
     except KeyboardInterrupt:
         print('\nFinalizando servidor...')
