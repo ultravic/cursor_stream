@@ -1,3 +1,5 @@
-PyAutoGUI==0.9.42
-xlib==0.21
-pynput==1.4.2
+PyAutoGUI
+xlib
+pynput
+numpy
+matplotlib
