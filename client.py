@@ -5,6 +5,7 @@ import struct
 import logging
 import pickle
 import sys
+import settings
 
 # Library for graphics
 import numpy as np
@@ -12,15 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import scipy.ndimage.filters as filters
 
-# Default variables
-DEFAULT_MCAST_GRP = '224.1.1.1'
-DEFAULT_MCAST_PORT = 5007
-IS_ALL_GROUPS = False
-MESSAGES = {
-    'usage': '<client> [[-h <server>], [-p <port>], [-g <group>]]'
-}
-
-logging.basicConfig(format = '%(asctime)s [%(levelname)s]: %(message)s', level = logging.INFO, datefmt = '%m-%d-%Y %I:%M:%S')
+logging.basicConfig(format = settings.LOGGING_FORMAT, level = settings.LOGGING_LEVEL, datefmt = settings.LOGGING_DFT)
+logger = logging.getLogger(__name__)
 
 # Connection initialization function
 def connection(HOST, PORT, GROUP):
@@ -31,12 +25,12 @@ def connection(HOST, PORT, GROUP):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        logging.info('Socket created')
+        logger.info('Socket created')
     except:
-        logging.error('Error on socket creation')
+        logger.error('Error on socket creation')
         exit(0)
 
-    if IS_ALL_GROUPS:
+    if settings.IS_ALL_GROUPS:
         # on this port, receives ALL multicast groups
         sock.bind(('', PORT))
     else:
@@ -61,7 +55,7 @@ def plot(data, title, save_path):
 
 def init(argv):
     if '--help' in argv or '-h' not in argv:
-        print('Usage: ' + MESSAGES['usage'])
+        print('Usage: ' + settings.MESSAGES['usage_client'])
         exit(0)
 
     # Verify if any option is in the arguments
@@ -69,17 +63,17 @@ def init(argv):
     if '-p' in argv:
         port = int(argv[argv.index('-p') + 1])
     else:
-        port = DEFAULT_MCAST_PORT
+        port = settings.DEFAULT_MCAST_PORT
     if '-g' in argv:
         grp = int(argv[argv.index('-g') + 1])
     else:
-        grp = DEFAULT_MCAST_GRP
+        grp = settings.DEFAULT_MCAST_GRP
 
     try:
         sock = connection(host, port, grp) 
-        logging.info('Socket connection succeeded')
+        logger.info('Socket connection succeeded')
     except:
-        logging.error('Error on socket connection')
+        logger.error('Error on socket connection')
         exit(0)
 
     # Receive data until CTRL + C
@@ -100,13 +94,13 @@ def init(argv):
 
             if data['id'] != packet_counter + 1:
                 missing.append(data)
-                logging.warning("Missing packet %d\n", (packet_counter + 1))
+                logger.warning("Missing packet id:%d\n", (packet_counter + 1))
                 packet_counter = data['id']
             else:
                 packet_counter += 1
             if data['id'] < packet_counter:
                 off_order.append(data)
-                loggin.warning("Out of order packet %d\n", data['id'])
+                loggin.warning("Out of order packet id:%d\n", data['id'])
 
             packets.append(data)
             # For debug purposes
@@ -114,8 +108,8 @@ def init(argv):
             # print(positionStr, end='')
             # print('\b' * len(positionStr), end='', flush=True)
     except KeyboardInterrupt:
-        logging.info('Last packet received id:%d', data['id'])
-        
+        logger.info('Last packet received id:%d', data['id'])
+
         # Create a base array
         grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
         grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
@@ -133,10 +127,10 @@ def init(argv):
         grid_scr = filters.gaussian_filter(grid_scr, sigma=10)
         
         # Plot the graphics
-        plot(grid_pos, 'Cursor Heatmap', 'cheat.jpg')
-        plot(grid_scr, 'Scroll Heatmap', 'sheat.jpg')
+        plot(grid_pos, 'Cursor Heatmap', settings.SAVE_CURSOR)
+        plot(grid_scr, 'Scroll Heatmap', settings.SAVE_SCROLL)
 
-        logging.info('Closing server')
+        logger.info('Closing server')
         exit(1)
 
 init(sys.argv)

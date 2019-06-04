@@ -5,20 +5,15 @@ import logging
 import pickle
 import sys
 import time
+import settings
+
 # Cursor librarys
 import pyautogui
 from pynput import mouse, keyboard
 from pynput.mouse import Button, Controller
 
-# Default variables
-DEFAULT_MCAST_GRP = '224.1.1.1'
-DEFAULT_MCAST_PORT = 5007
-DEFAULT_MCAST_TTL = 2
-MESSAGES = {
-    'usage': '<server> [[-p <port>], [-t <ttl>], [-g <group>]]' 
-}
-
-logging.basicConfig(format = '%(asctime)s [%(levelname)s]: %(message)s', level = logging.INFO, datefmt = '%m-%d-%Y %I:%M:%S')
+logging.basicConfig(format = settings.LOGGING_FORMAT, level = settings.LOGGING_LEVEL, datefmt = settings.LOGGING_DFT)
+logger = logging.getLogger(__name__)
 
 # Packet structure
 data = {
@@ -37,49 +32,49 @@ def connection(PORT, GROUP, TTL):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, TTL)
-        logging.info('Socket created')
+        logger.info('Socket created')
     except:
-        logging.error('Error on socket creation')
+        logger.error('Error on socket creation')
         exit(0)
 
     return sock
 
 def on_move(x, y):
     data['mouse_position'] = (x,y)
-    logging.debug('Pointer moved to {0}'.format((x, y)))
+    logger.debug('Pointer moved to {0}'.format((x, y)))
 
 def on_click(x, y, button, pressed):
     data['mouse_pressed'] = pressed
-    logging.debug('{0} at {1}'.format('Pressed' if pressed else 'Released', (x, y)))
+    logger.debug('{0} at {1}'.format('Pressed' if pressed else 'Released', (x, y)))
 
 def on_scroll(x, y, dx, dy):
     data['mouse_scrolled'] = True
-    logging.debug('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up', (x, y)))
+    logger.debug('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up', (x, y)))
 
 def init(argv):
     if '--help' in argv:
-        print('Usage: ' + MESSAGES['usage'])
+        print('Usage: ' + settings.MESSAGES['usage_server'])
         exit(0)
 
     # Verify if any option is in the arguments
     if '-p' in argv:
         port = int(argv[argv.index('-p') + 1])
     else:
-        port = DEFAULT_MCAST_PORT
+        port = settings.DEFAULT_MCAST_PORT
     if '-t' in argv:
         ttl = int(argv[argv.index('-t') + 1])
     else:
-        ttl = DEFAULT_MCAST_TTL
+        ttl = settings.DEFAULT_MCAST_TTL
     if '-g' in argv:
         grp = int(argv[argv.index('-g') + 1])
     else:
-        grp = DEFAULT_MCAST_GRP
+        grp = settings.DEFAULT_MCAST_GRP
 
     try:
         sock = connection(port, grp, ttl)
-        logging.info('Socket connection succeeded')
+        logger.info('Socket connection succeeded')
     except:
-        logging.error('Error on socket connection')
+        logger.error('Error on socket connection')
         exit(0)
 
     # Send data until CTRL + C
@@ -92,7 +87,7 @@ def init(argv):
                 on_scroll=on_scroll)
         try:
             listener.start()
-            logging.info('Mouse listener started')
+            logger.info('Mouse listener started')
         except:
             loggin.error('Mouse listener start failed')
             exit(0)
@@ -107,9 +102,9 @@ def init(argv):
             data['id'] = counter
             data['mouse_scrolled'] = False
             counter += 1
-            logging.info('First packet sent succefuly')
+            logger.info('First packet sent succefuly')
         except:
-            logging.error('Sending packet failed')
+            logger.error('Sending packet failed')
             exit(0)
 
         while True:
@@ -119,10 +114,10 @@ def init(argv):
             data['mouse_scrolled'] = False
             counter += 1
     except KeyboardInterrupt:
-        logging.info('Last packet sent id:%d', data['id'])
+        logger.info('Last packet sent id:%d', data['id'])
         listener.stop()
-        logging.info('Mouse listener closed')
-        logging.info('Closing server')
+        logger.info('Mouse listener closed')
+        logger.info('Closing server')
         exit(1)
 
 init(sys.argv)
