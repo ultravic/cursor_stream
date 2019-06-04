@@ -12,7 +12,11 @@ import pyautogui
 from pynput import mouse, keyboard
 from pynput.mouse import Button, Controller
 
-logging.basicConfig(format = settings.LOGGING_FORMAT, level = settings.LOGGING_LEVEL, datefmt = settings.LOGGING_DFT)
+logging.basicConfig(filename = settings.LOGGING_FILE_SERVER,
+            filemode = 'w',
+            format = settings.LOGGING_FORMAT, 
+            level = settings.LOGGING_LEVEL, 
+            datefmt = settings.LOGGING_DFT)
 logger = logging.getLogger(__name__)
 
 # Packet structure
@@ -20,7 +24,7 @@ data = {
     'id'    : 0,
     'mouse_position' : (0,0),
     'mouse_pressed' : False,
-    'mouse_scrolled' : False,
+    'mouse_scrolled' : (False, ''),
     'screen_size' : (0, 0),
 }
 
@@ -48,12 +52,15 @@ def on_click(x, y, button, pressed):
     logger.debug('{0} at {1}'.format('Pressed' if pressed else 'Released', (x, y)))
 
 def on_scroll(x, y, dx, dy):
-    data['mouse_scrolled'] = True
+    data['mouse_scrolled'] = (True, 'down' if dy < 0 else 'up')
     logger.debug('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up', (x, y)))
 
 def init(argv):
     if '--help' in argv:
         print('Usage: ' + settings.MESSAGES['usage_server'])
+        print('> Optional parameters:')
+        for param in settings.MESSAGES['descr_server']:
+            print('\t - ' + param)
         exit(0)
 
     # Verify if any option is in the arguments
@@ -89,7 +96,7 @@ def init(argv):
             listener.start()
             logger.info('Mouse listener started')
         except:
-            loggin.error('Mouse listener start failed')
+            logging.error('Mouse listener start failed')
             exit(0)
         
 
@@ -99,8 +106,7 @@ def init(argv):
             data['screen_size'] = (screen_w, screen_h)
             time.sleep(0.0001)
             sock.sendto(pickle.dumps(data), (grp, port))
-            data['id'] = counter
-            data['mouse_scrolled'] = False
+            data['mouse_scrolled'] = (False, '')
             counter += 1
             logger.info('First packet sent succefuly')
         except:
@@ -109,9 +115,9 @@ def init(argv):
 
         while True:
             time.sleep(0.0001)
-            sock.sendto(pickle.dumps(data), (grp, port))
             data['id'] = counter
-            data['mouse_scrolled'] = False
+            sock.sendto(pickle.dumps(data), (grp, port))
+            data['mouse_scrolled'] = (False, '')
             counter += 1
     except KeyboardInterrupt:
         logger.info('Last packet sent id:%d', data['id'])

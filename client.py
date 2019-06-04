@@ -10,10 +10,13 @@ import settings
 # Library for graphics
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import scipy.ndimage.filters as filters
 
-logging.basicConfig(format = settings.LOGGING_FORMAT, level = settings.LOGGING_LEVEL, datefmt = settings.LOGGING_DFT)
+logging.basicConfig(filename = settings.LOGGING_FILE_CLIENT,
+            filemode = 'w',
+            format = settings.LOGGING_FORMAT, 
+            level = settings.LOGGING_LEVEL, 
+            datefmt = settings.LOGGING_DFT)
 logger = logging.getLogger(__name__)
 
 # Connection initialization function
@@ -43,19 +46,25 @@ def connection(HOST, PORT, GROUP):
     return sock
 
 def plot(data, title, save_path):
-    colors = [(1, 1, 1), (0, 1, 1), (0, 1, 0.75)]
-
-    cm = LinearSegmentedColormap.from_list('sample', colors)
-
-    plt.imshow(data, cmap='hot', interpolation='nearest')
+    plt.imshow(data, cmap='hot')
     plt.xlabel("Width")
     plt.ylabel("Height")
     plt.title(title)
-    plt.show()
+
+    if save_path:
+        plt.savefig(save_path, format = settings.IMAGE_FORMAT)
+    else:
+        plt.show()
 
 def init(argv):
     if '--help' in argv or '-h' not in argv:
         print('Usage: ' + settings.MESSAGES['usage_client'])
+        print('> Needed parameters :')
+        for param in settings.MESSAGES['descr_client']['needed']:
+            print('\t - ' + param)
+        print('> Optional parameters:')
+        for param in settings.MESSAGES['descr_client']['optional']:
+            print('\t - ' + param)
         exit(0)
 
     # Verify if any option is in the arguments
@@ -82,54 +91,84 @@ def init(argv):
         missing = []
         off_order = []
         packet_counter = 0
+        scroll_counter = 0
+        click_counter = 0
+        click_vfy = False
+        packet_vfy = -1
 
-        received = sock.recvfrom(4096)
-        data = pickle.loads(received[0])
-
-        packets.append(data)
-        packet_counter = data['id']
         while True:
-            received = sock.recvfrom(4096)
+            received = sock.recvfrom(300)
             data = pickle.loads(received[0])
 
-            if data['id'] != packet_counter + 1:
+            # Verify missing packets and out of order packets
+            if data['id'] != packet_vfy + 1:
                 missing.append(data)
-                logger.warning("Missing packet id:%d\n", (packet_counter + 1))
-                packet_counter = data['id']
+                logger.warning("Missing packet id:%d", (packet_vfy + 1))
+                packet_vfy = data['id']
             else:
-                packet_counter += 1
-            if data['id'] < packet_counter:
-                off_order.append(data)
-                loggin.warning("Out of order packet id:%d\n", data['id'])
+                packet_vfy += 1
 
+            if data['id'] < packet_vfy:
+                off_order.append(data)
+                logging.warning("Out of order packet id:%d", data['id'])
+
+            # Print actions to debug
+            logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
+            if data['mouse_pressed'] and not click_vfy:
+                click_counter += 1
+                click_vfy = True
+                logger.debug('{0} at {1}'.format('Pressed', data['mouse_position']))
+            elif not data['mouse_pressed'] and click_vfy:
+                click_vfy = False
+                logger.debug('{0} at {1}'.format('Released', data['mouse_position']))
+            if data['mouse_scrolled'][0]:
+                scroll_counter += 1
+                logger.debug('Scrolled {0} at {1}'.format(data['mouse_scrolled'][1], data['mouse_position']))
+            
             packets.append(data)
-            # For debug purposes
-            # positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
-            # print(positionStr, end='')
-            # print('\b' * len(positionStr), end='', flush=True)
+            packet_counter += 1
+        click_vfy = False
     except KeyboardInterrupt:
         logger.info('Last packet received id:%d', data['id'])
+        logger.info('Number of packets received is %d', packet_counter)
+        logger.info('Number of clicks received is %d', click_counter)
+        logger.info('Number of scrolls received is %d', scroll_counter)
 
         # Create a base array
         grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
         grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
         grid_pos = grid.copy()
         grid_scr = grid.copy()
+        grid_prd = grid.copy()
 
         # Update pixels
         for packet in packets:
             grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
-            if packet['mouse_scrolled']:
+            if packet['mouse_scrolled'][0]:
                 grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+            if packet['mouse_pressed'] and not click_vfy:
+                click_vfy = True
+                grid_prd[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+            elif packet['mouse_pressed'] and click_vfy:
+                grid_prd[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+            elif not packet['mouse_pressed'] and click_vfy:
+                click_vfy = False
 
         # Add effect filter
         grid_pos = filters.gaussian_filter(grid_pos, sigma=10)
         grid_scr = filters.gaussian_filter(grid_scr, sigma=10)
+        grid_prd = filters.gaussian_filter(grid_prd, sigma=10)
         
-        # Plot the graphics
-        plot(grid_pos, 'Cursor Heatmap', settings.SAVE_CURSOR)
-        plot(grid_scr, 'Scroll Heatmap', settings.SAVE_SCROLL)
-
+        # Plot the graphics to file or show
+        if '-simage' in argv:
+            plot(grid_pos, 'Cursor Heatmap', settings.SAVE_CURSOR)
+            plot(grid_scr, 'Scroll Heatmap', settings.SAVE_SCROLL)
+            plot(grid_prd, 'Click Heatmap', settings.SAVE_PRESS)
+        else:
+            plot(grid_pos, 'Cursor Heatmap', '')
+            plot(grid_scr, 'Scroll Heatmap', '')
+            plot(grid_prd, 'Click Heatmap', '')
+            
         logger.info('Closing server')
         exit(1)
 

@@ -3,3 +3,4 @@ xlib
 pynput
 numpy
 matplotlib
+scipy
