@@ -18,6 +18,8 @@ MESSAGES = {
     'usage': '<server> [[-p <port>], [-t <ttl>], [-g <group>]]' 
 }
 
+logging.basicConfig(format = '%(asctime)s [%(levelname)s]: %(message)s', level = logging.INFO, datefmt = '%m-%d-%Y %I:%M:%S')
+
 # Packet structure
 data = {
     'id'    : 0,
@@ -35,44 +37,26 @@ def connection(PORT, GROUP, TTL):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, TTL)
+        logging.info('Socket created')
     except:
-        print("Erro ao criar socket!")
+        logging.error('Error on socket creation')
         exit(0)
 
     return sock
 
-
-# def logger(x,y):
-#     # For debug purposes
-#     positionStr = 'X: ' + str(x).rjust(4) + ' Y: ' + str(y).rjust(4)
-#     print(positionStr, end='')
-#     print('\b' * len(positionStr), end='', flush=True)
-
-
 def on_move(x, y):
-    global data
     data['mouse_position'] = (x,y)
-    # print('Pointer moved to {0}'.format(
-    #     (x, y)))
+    logging.debug('Pointer moved to {0}'.format((x, y)))
 
 def on_click(x, y, button, pressed):
-    global data
     data['mouse_pressed'] = pressed
-    # print('{0} at {1}'.format(
-    #     'Pressed' if pressed else 'Released',
-    #     (x, y)))
+    logging.debug('{0} at {1}'.format('Pressed' if pressed else 'Released', (x, y)))
 
 def on_scroll(x, y, dx, dy):
-    global data
     data['mouse_scrolled'] = True
-    # print('Scrolled {0} at {1}'.format(
-    #     'down' if dy < 0 else 'up',
-    #     (x, y)))
-    # print('dy {0}'.format(dy))
+    logging.debug('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up', (x, y)))
 
 def init(argv):
-    global data 
-
     if '--help' in argv:
         print('Usage: ' + MESSAGES['usage'])
         exit(0)
@@ -91,7 +75,12 @@ def init(argv):
     else:
         grp = DEFAULT_MCAST_GRP
 
-    sock = connection(port, grp, ttl)
+    try:
+        sock = connection(port, grp, ttl)
+        logging.info('Socket connection succeeded')
+    except:
+        logging.error('Error on socket connection')
+        exit(0)
 
     # Send data until CTRL + C
     try:
@@ -101,11 +90,27 @@ def init(argv):
                 on_move=on_move, 
                 on_click=on_click, 
                 on_scroll=on_scroll)
-        listener.start()
+        try:
+            listener.start()
+            logging.info('Mouse listener started')
+        except:
+            loggin.error('Mouse listener start failed')
+            exit(0)
+        
 
         screen_w, screen_h = pyautogui.size()
-        data['screen_size'] = (screen_w, screen_h)
-        data['id'] = counter
+        try:
+            data['id'] = counter
+            data['screen_size'] = (screen_w, screen_h)
+            time.sleep(0.0001)
+            sock.sendto(pickle.dumps(data), (grp, port))
+            data['id'] = counter
+            data['mouse_scrolled'] = False
+            counter += 1
+            logging.info('First packet sent succefuly')
+        except:
+            logging.error('Sending packet failed')
+            exit(0)
 
         while True:
             time.sleep(0.0001)
@@ -114,8 +119,10 @@ def init(argv):
             data['mouse_scrolled'] = False
             counter += 1
     except KeyboardInterrupt:
-        print('\nFinalizando servidor...')
+        logging.info('Last packet sent id:%d', data['id'])
         listener.stop()
+        logging.info('Mouse listener closed')
+        logging.info('Closing server')
         exit(1)
 
 init(sys.argv)

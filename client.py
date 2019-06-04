@@ -15,11 +15,12 @@ import scipy.ndimage.filters as filters
 # Default variables
 DEFAULT_MCAST_GRP = '224.1.1.1'
 DEFAULT_MCAST_PORT = 5007
-IS_ALL_GROUPS = True
+IS_ALL_GROUPS = False
 MESSAGES = {
     'usage': '<client> [[-h <server>], [-p <port>], [-g <group>]]'
 }
 
+logging.basicConfig(format = '%(asctime)s [%(levelname)s]: %(message)s', level = logging.INFO, datefmt = '%m-%d-%Y %I:%M:%S')
 
 # Connection initialization function
 def connection(HOST, PORT, GROUP):
@@ -30,8 +31,9 @@ def connection(HOST, PORT, GROUP):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        logging.info('Socket created')
     except:
-        print("Erro ao criar socket")
+        logging.error('Error on socket creation')
         exit(0)
 
     if IS_ALL_GROUPS:
@@ -40,20 +42,18 @@ def connection(HOST, PORT, GROUP):
     else:
         # on this port, listen ONLY to MCAST_GRP
         sock.bind((GROUP, PORT))
-    mreq = struct.pack('4sl', socket.inet_aton(GROUP), socket.INADDR_ANY)
 
+    mreq = struct.pack('4sl', socket.inet_aton(GROUP), socket.INADDR_ANY)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     return sock
 
 def plot(data, title, save_path):
-    colors = [(1, 1, 1), (0, 1, 1), (0, 1, 0.75), (0, 1, 0), (0.75, 1, 0),
-              (1, 1, 0), (1, 0.8, 0), (1, 0.7, 0), (1, 0, 0)]
+    colors = [(1, 1, 1), (0, 1, 1), (0, 1, 0.75)]
 
     cm = LinearSegmentedColormap.from_list('sample', colors)
 
-    plt.imshow(data, cmap=cm)
-    plt.colorbar()
+    plt.imshow(data, cmap='hot', interpolation='nearest')
     plt.xlabel("Width")
     plt.ylabel("Height")
     plt.title(title)
@@ -75,7 +75,12 @@ def init(argv):
     else:
         grp = DEFAULT_MCAST_GRP
 
-    sock = connection(host, port, grp)
+    try:
+        sock = connection(host, port, grp) 
+        logging.info('Socket connection succeeded')
+    except:
+        logging.error('Error on socket connection')
+        exit(0)
 
     # Receive data until CTRL + C
     try:
@@ -95,20 +100,22 @@ def init(argv):
 
             if data['id'] != packet_counter + 1:
                 missing.append(data)
-                print("Missing packet %d\n", packet_counter + 1)
+                logging.warning("Missing packet %d\n", (packet_counter + 1))
                 packet_counter = data['id']
             else:
                 packet_counter += 1
             if data['id'] < packet_counter:
                 off_order.append(data)
-                print("Out of order packet %d\n", data['id'])
+                loggin.warning("Out of order packet %d\n", data['id'])
 
             packets.append(data)
             # For debug purposes
-            positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
-            print(positionStr, end='')
-            print('\b' * len(positionStr), end='', flush=True)
+            # positionStr = str(data['id']) + ' > ' + 'X: ' + str(data['mouse_position'][0]).rjust(4) + ' Y: ' + str(data['mouse_position'][1]).rjust(4)
+            # print(positionStr, end='')
+            # print('\b' * len(positionStr), end='', flush=True)
     except KeyboardInterrupt:
+        logging.info('Last packet received id:%d', data['id'])
+        
         # Create a base array
         grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
         grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
@@ -117,10 +124,9 @@ def init(argv):
 
         # Update pixels
         for packet in packets:
-            grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+            grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
             if packet['mouse_scrolled']:
-                grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
-
+                grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
 
         # Add effect filter
         grid_pos = filters.gaussian_filter(grid_pos, sigma=10)
@@ -130,7 +136,7 @@ def init(argv):
         plot(grid_pos, 'Cursor Heatmap', 'cheat.jpg')
         plot(grid_scr, 'Scroll Heatmap', 'sheat.jpg')
 
-        print('\nFinalizando cliente...')
+        logging.info('Closing server')
         exit(1)
 
 init(sys.argv)
