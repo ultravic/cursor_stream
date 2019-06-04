@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # Packet structure
 data = {
-    'id'    : 0,
+    'id'    : 1,
     'mouse_position' : (0,0),
     'mouse_pressed' : False,
     'mouse_scrolled' : (False, ''),
@@ -89,6 +89,10 @@ def init(argv):
         grp = int(argv[argv.index('-g') + 1])
     else:
         grp = settings.DEFAULT_MCAST_GRP
+    if '-i' in argv:
+        inter = float(argv[argv.index('-i') + 1])
+    else:
+        inter = settings.DEFAULT_TIME
 
     try:
         sock = connection(ttl)
@@ -119,7 +123,7 @@ def init(argv):
         try:
             data['id'] = counter
             data['screen_size'] = (screen_w, screen_h)
-            time.sleep(0.0001)
+            time.sleep(inter)
             sock.sendto(pickle.dumps(data), (grp, port))
 
             data['mouse_scrolled'] = (False, '')
@@ -130,7 +134,7 @@ def init(argv):
             exit(0)
 
         while True:
-            time.sleep(0.0001)
+            time.sleep(inter)
             data['id'] = counter
             sock.sendto(pickle.dumps(data), (grp, port))
             

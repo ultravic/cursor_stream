@@ -103,7 +103,7 @@ def init(argv):
         scroll_counter = 0
         click_counter = 0
         click_vfy = False
-        packet_vfy = -1
+        packet_vfy = 0
 
         while True:
             received = sock.recvfrom(280)
@@ -141,6 +141,8 @@ def init(argv):
         if packet_counter:
             logger.info('Last packet received id:%d', data['id'])
             logger.info('Number of packets received is %d', packet_counter)
+            logger.info('Number of packets missing is %d', len(missing))
+            logger.info('Number of packets out of order is %d', len(off_order))
             logger.info('Number of clicks received is %d', click_counter)
             logger.info('Number of scrolls received is %d', scroll_counter)
 

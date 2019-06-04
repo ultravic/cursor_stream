@@ -11,6 +11,8 @@ DEFAULT_MCAST_PORT = 5007
 # Default TTL
 DEFAULT_MCAST_TTL = 2
 
+DEFAULT_TIME = 0.0001
+
 # Define if will use specific group or all
 IS_ALL_GROUPS = True
 
@@ -30,7 +32,7 @@ LOGGING_FILE_SERVER = 'logs/server.log'
 LOGGING_FILE_CLIENT = 'logs/client.log'
 
 # Logging definitions
-LOGGING_LEVEL = logging.INFO
+LOGGING_LEVEL = logging.DEBUG
 LOGGING_FORMAT = '%(asctime)s [%(levelname)s]: %(message)s'
 LOGGING_DFT = '%m-%d-%Y %H:%M:%S'
 
