@@ -29,10 +29,11 @@ data = {
 }
 
 # Connection initialization function
-def connection(PORT, GROUP, TTL):
-    host_name = socket.gethostname()
-    host = socket.gethostbyname(host_name)
-
+def connection(TTL):
+    '''
+    Create a socket of UDP/IP. The socket is set to multicast format.
+    It's possible to set the TTL of the socket.
+    '''
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, TTL)
@@ -44,14 +45,26 @@ def connection(PORT, GROUP, TTL):
     return sock
 
 def on_move(x, y):
+    ''' 
+    On event, this function get the position (x,y) from
+    the cursor. The position is assign to data packet.
+    '''
     data['mouse_position'] = (x,y)
     logger.debug('Pointer moved to {0}'.format((x, y)))
 
 def on_click(x, y, button, pressed):
+    ''' 
+    On event, this function get the press and release of the left
+    mouse button. The action is assign to data packet.
+    '''
     data['mouse_pressed'] = pressed
     logger.debug('{0} at {1}'.format('Pressed' if pressed else 'Released', (x, y)))
 
 def on_scroll(x, y, dx, dy):
+    ''' 
+    On event, this function get the scroll direction of the
+    mouse button. The action is assign to data packet.
+    '''
     data['mouse_scrolled'] = (True, 'down' if dy < 0 else 'up')
     logger.debug('Scrolled {0} at {1}'.format('down' if dy < 0 else 'up', (x, y)))
 
@@ -78,7 +91,7 @@ def init(argv):
         grp = settings.DEFAULT_MCAST_GRP
 
     try:
-        sock = connection(port, grp, ttl)
+        sock = connection(ttl)
         logger.info('Socket connection succeeded')
     except:
         logger.error('Error on socket connection')
@@ -87,6 +100,7 @@ def init(argv):
     # Send data until CTRL + C
     try:
         counter = 0
+
         # Collect events until released
         listener = mouse.Listener(
                 on_move=on_move, 
@@ -100,12 +114,14 @@ def init(argv):
             exit(0)
         
 
+        # Define packets with data from the listener events and send through socket
         screen_w, screen_h = pyautogui.size()
         try:
             data['id'] = counter
             data['screen_size'] = (screen_w, screen_h)
             time.sleep(0.0001)
             sock.sendto(pickle.dumps(data), (grp, port))
+
             data['mouse_scrolled'] = (False, '')
             counter += 1
             logger.info('First packet sent succefuly')
@@ -117,12 +133,15 @@ def init(argv):
             time.sleep(0.0001)
             data['id'] = counter
             sock.sendto(pickle.dumps(data), (grp, port))
+            
             data['mouse_scrolled'] = (False, '')
             counter += 1
     except KeyboardInterrupt:
         logger.info('Last packet sent id:%d', data['id'])
         listener.stop()
         logger.info('Mouse listener closed')
+        sock.close()
+        logger.info('Socket closed')
         logger.info('Closing server')
         exit(1)
 
