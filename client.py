@@ -55,6 +55,7 @@ def plot(data, title, save_path):
     Creates a graphical visualization of the data. It's possible to send
     the graphic result to a file.
     '''
+    plt.figure(figsize=(10,6), dpi=100)
     plt.imshow(data, cmap='hot')
     plt.xlabel("Width")
     plt.ylabel("Height")
@@ -104,6 +105,29 @@ def init(argv):
         click_counter = 0
         click_vfy = False
         packet_vfy = 0
+
+        # Wait for first packet
+        received = sock.recvfrom(280)
+        data = pickle.loads(received[0])
+
+        logger.info("Firs packet received id:%d", data['id'])
+        packet_vfy = data['id']
+
+        # Print actions to debug
+        logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
+        if data['mouse_pressed'] and not click_vfy:
+            click_counter += 1
+            click_vfy = True
+            logger.debug('{0} at {1}'.format('Pressed', data['mouse_position']))
+        elif not data['mouse_pressed'] and click_vfy:
+            click_vfy = False
+            logger.debug('{0} at {1}'.format('Released', data['mouse_position']))
+        if data['mouse_scrolled'][0]:
+            scroll_counter += 1
+            logger.debug('Scrolled {0} at {1}'.format(data['mouse_scrolled'][1], data['mouse_position']))
+        
+        packets.append(data)
+        packet_counter += 1
 
         while True:
             received = sock.recvfrom(280)

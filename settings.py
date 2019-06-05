@@ -32,7 +32,7 @@ LOGGING_FILE_SERVER = 'logs/server.log'
 LOGGING_FILE_CLIENT = 'logs/client.log'
 
 # Logging definitions
-LOGGING_LEVEL = logging.DEBUG
+LOGGING_LEVEL = logging.INFO
 LOGGING_FORMAT = '%(asctime)s [%(levelname)s]: %(message)s'
 LOGGING_DFT = '%m-%d-%Y %H:%M:%S'
 
