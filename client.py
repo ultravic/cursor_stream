@@ -6,6 +6,7 @@ import logging
 import pickle
 import sys
 import settings
+import queue 
 
 # Library for graphics
 import numpy as np
@@ -102,19 +103,20 @@ def init(argv):
     try:
         packets = []
         missing = []
-        off_order = []
+        missing_cnt = 0
+        off_order = 0
         packet_counter = 0
         scroll_counter = 0
         click_counter = 0
         click_vfy = False
-        packet_vfy = 0
+        greatest_pack = 0
 
         # Wait for first packet
         received = sock.recvfrom(280)
         data = pickle.loads(received[0])
 
-        logger.info("Firs packet received id:%d", data['id'])
-        packet_vfy = data['id']
+        logger.info("First packet received id:%d", data['id'])
+        greatest_pack = data['id']
 
         # Print actions to debug
         logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
@@ -131,22 +133,37 @@ def init(argv):
         
         packets.append(data)
         packet_counter += 1
-
+        a = False
         while True:
             received = sock.recvfrom(280)
             data = pickle.loads(received[0])
 
-            # Verify missing packets and out of order packets
-            if data['id'] != packet_vfy + 1:
-                missing.append(data)
-                logger.critical("Missing packet id:%d", (packet_vfy + 1))
-                packet_vfy = data['id']
+            print (*missing)
+            # Verify if "missing" packets are realy missed (farther than an window size from the last packet)
+            for miss in missing:
+                if(data['id'] > miss + settings.DEFAULT_WINDOW_SIZE):
+                    logger.critical("Missing packet id:%d", miss)
+                    missing_cnt += 1
+                    del missing[missing.index(miss)]
+                    a = True
+            if(a):
+                logger.critical("Packet triggered missing :%d", data['id'])
+            a = False
+            # Verify if the packet is ahead of time
+            if data['id'] > greatest_pack + 1:
+                logger.critical("Packet ahead of time id:%d -- curr: %d", data['id'], greatest_pack)
+                for miss in range(greatest_pack + 1, data['id']):
+                    missing.append(miss)
+                greatest_pack = data['id']
             else:
-                packet_vfy += 1
-
-            if data['id'] < packet_vfy:
-                off_order.append(data)
-                logging.critical("Out of order packet id:%d", data['id'])
+                # Verify if is out of order
+                try:
+                    idx = missing.index(data['id'])
+                    logger.critical("Packet out of order id:%d", missing[idx]['id'])
+                    off_order += 1
+                    del missing[idx]
+                except ValueError:
+                    greatest_pack = data['id']
 
             # Print actions to debug
             logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
@@ -168,8 +185,8 @@ def init(argv):
         if packet_counter:
             logger.info('Last packet received id:%d', data['id'])
             logger.info('Number of packets received is %d', packet_counter)
-            logger.info('Number of packets missing is %d', len(missing))
-            logger.info('Number of packets out of order is %d', len(off_order))
+            logger.info('Number of packets missing is %d', missing_cnt)
+            logger.info('Number of packets out of order is %d', off_order)
             logger.info('Number of clicks received is %d', click_counter)
             logger.info('Number of scrolls received is %d', scroll_counter)
 
@@ -182,9 +199,9 @@ def init(argv):
 
             # Update pixels
             for packet in packets:
-                grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+                grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
                 if packet['mouse_scrolled'][0]:
-                    grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+                    grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
                 if packet['mouse_pressed'] and not click_vfy:
                     click_vfy = True
                     grid_prd[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
@@ -212,7 +229,7 @@ def init(argv):
 
         sock.close()
         logger.info('Socket closed')
-        logger.info('Closing server')
+        logger.info('Closing client')
         exit(1)
 
 init(sys.argv)
