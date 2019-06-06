@@ -55,7 +55,7 @@ def connection(HOST, PORT, GROUP):
 
 
 def verifyMissingPackets(seems_missing, missing_cnt, data):
-    print(*seems_missing)
+    # print(*seems_missing)
     a = False
     # Verify if "missing" packets are realy missed (farther than an window size from the last packet)
     for miss in seems_missing:
@@ -66,6 +66,8 @@ def verifyMissingPackets(seems_missing, missing_cnt, data):
             a = True
     if(a):
         logger.critical("Packet triggered missing :%d", data['id'])
+    
+    return missing_cnt
 
 
 def plot(data, title, save_path):
@@ -160,7 +162,7 @@ def init(argv):
             received = sock.recvfrom(280)
             data = pickle.loads(received[0])
 
-            verifyMissingPackets(missing, missing_cnt, data)
+            missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
 
             # Verify if the packet is ahead of time
             if data['id'] > greatest_pack + 1:
@@ -168,7 +170,7 @@ def init(argv):
                     "Packet ahead of time id:%d -- curr: %d", data['id'], greatest_pack)
                 for miss in range(greatest_pack + 1, data['id']):
                     missing.append(miss)
-                del packets[packets.index(data)]
+                # del packets[packets.index(data)]
                 greatest_pack = data['id']
             else:
                 # Verify if is out of order
@@ -206,6 +208,10 @@ def init(argv):
 
             packets.append(data)
             packet_counter += 1
+            # print(missing_cnt)
+
+        missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
+        
         click_vfy = False
     except KeyboardInterrupt:
         if packet_counter:
