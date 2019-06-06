@@ -38,11 +38,12 @@ LOGGING_DFT = '%m-%d-%Y %H:%M:%S'
 
 # Default messages
 MESSAGES = {
-    'usage_server': '<server> [[-p <port>], [-t <ttl>], [-g <group>]]',
+    'usage_server': '<server> [[-p <port>], [-t <ttl>], [-g <group>], [-i <seconds>]]',
     'usage_client': '<client> -h <server_name> [[-p <port>], [-g <group>], [-simage]]',
     'descr_server': [
                         '<port>: port where socket will be created',
-                        '<ttl>: time to live of the packets'
+                        '<ttl>: time to live of the packets',
+                        '<seconds>: time between packets sent'
     ],
     'descr_client': {
                     'needed': [
