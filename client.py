@@ -6,7 +6,6 @@ import logging
 import pickle
 import sys
 import settings
-import queue
 
 # Library for graphics
 import numpy as np
@@ -169,6 +168,7 @@ def init(argv):
                     "Packet ahead of time id:%d -- curr: %d", data['id'], greatest_pack)
                 for miss in range(greatest_pack + 1, data['id']):
                     missing.append(miss)
+                del packets[packets.index(data)]
                 greatest_pack = data['id']
             else:
                 # Verify if is out of order
@@ -179,7 +179,14 @@ def init(argv):
                     off_order += 1
                     del missing[idx]
                 else:
-                    greatest_pack = data['id']
+                    if ((np.random.randint(0, 100) % 100) < 10):
+                        # Simulate a 1 % packet loss rate
+                        pass
+                        # printf("Pretending to have dropped a packet!\n");}
+                    else:
+                        #  handle the incoming packet as usual
+                        logger.critical("Packet in order:%d", data['id'])
+                        greatest_pack = data['id']
 
             # Print actions to debug
             logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
