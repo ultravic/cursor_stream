@@ -1,0 +1,46 @@
+06-07-2019 19:47:34 [INFO]: Socket created
+06-07-2019 19:47:34 [INFO]: Socket connection succeeded
+06-07-2019 19:49:03 [INFO]: First packet received id:0
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100161
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100162
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100163
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100164
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100165
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100166
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100167
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239816
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239817
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239818
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239819
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239820
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239821
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239822
+06-07-2019 19:52:52 [CRITICAL]: Missing packet id:1263119
+06-07-2019 19:52:52 [CRITICAL]: Missing packet id:1263120
+06-07-2019 19:52:52 [CRITICAL]: Missing packet id:1263121
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309650
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309651
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309652
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309653
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309654
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309655
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309656
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309657
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309658
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309659
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309660
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309661
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309662
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309663
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309664
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309665
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309666
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309667
+06-07-2019 19:53:10 [INFO]: Last packet received id:1319810
+06-07-2019 19:53:10 [INFO]: Number of packets received is 1319776
+06-07-2019 19:53:10 [INFO]: Number of packets missing is 43
+06-07-2019 19:53:10 [INFO]: Number of packets out of order is 0
+06-07-2019 19:53:10 [INFO]: Number of clicks received is 297
+06-07-2019 19:53:10 [INFO]: Number of scrolls received is 52
+06-07-2019 19:53:12 [INFO]: Socket closed
+06-07-2019 19:53:12 [INFO]: Closing client

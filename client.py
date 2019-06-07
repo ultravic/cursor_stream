@@ -51,22 +51,6 @@ def connection(HOST, PORT, GROUP):
     return sock
 
 
-def verifyMissingPackets(seems_missing, missing_cnt, data):
-    # print(*seems_missing)
-    a = False
-    # Verify if "missing" packets are realy missed (farther than an window size from the last packet)
-    for miss in seems_missing:
-        if(data['id'] > miss + settings.DEFAULT_WINDOW_SIZE):
-            logger.critical("Missing packet id:%d", miss)
-            missing_cnt += 1
-            del seems_missing[seems_missing.index(miss)]
-            a = True
-    if(a):
-        logger.critical("Packet triggered missing :%d", data['id'])
-    
-    return missing_cnt
-
-
 def plot(data, title, save_path):
     '''
     Creates a graphical visualization of the data. It's possible to send
@@ -160,33 +144,26 @@ def init(argv):
             received = sock.recvfrom(280)
             data = pickle.loads(received[0])
 
-            missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
 
             # Verify if the packet is ahead of time
-            if data['id'] > greatest_pack + 1:
-                logger.critical(
-                    "Packet ahead of time id:%d -- curr: %d", data['id'], greatest_pack)
-                for miss in range(greatest_pack + 1, data['id']):
-                    missing.append(miss)
-                # del packets[packets.index(data)]
-                greatest_pack = data['id']
-            else:
+            if data['id'] != greatest_pack + 1:
                 # Verify if is out of order
-                if data['id'] in missing:
+                if (data['id'] < greatest_pack) and (data['id'] in missing):
+                    logger.critical("Packet out of order id:%d", data['id'])
                     idx = missing.index(data['id'])
-                    logger.critical("Packet out of order id:%d",
-                                    missing[idx]['id'])
-                    off_order += 1
                     del missing[idx]
-                else:
-                    if ((np.random.randint(0, 100) % 100) < 10):
-                        # Simulate a 1 % packet loss rate
-                        pass
-                        # printf("Pretending to have dropped a packet!\n");}
-                    else:
-                        #  handle the incoming packet as usual
-                        logger.critical("Packet in order:%d", data['id'])
-                        greatest_pack = data['id']
+                    off_order += 1
+                    missing_cnt -= 1
+                else: 
+                    for miss in range(greatest_pack + 1, data['id']):
+                        logger.critical("Missing packet id:%d", miss)
+                        missing.append(miss)
+                    missing_cnt += (data['id'] - greatest_pack+1)
+                    greatest_pack = data['id']
+               
+            else:
+                greatest_pack += 1
+
 
             # Print actions to debug
             logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
@@ -208,7 +185,6 @@ def init(argv):
             packet_counter += 1
             # print(missing_cnt)
 
-        missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
         
         click_vfy = False
     except KeyboardInterrupt:
