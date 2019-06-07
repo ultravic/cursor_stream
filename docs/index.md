@@ -68,7 +68,10 @@ O cliente faz as verificações de opções, assim como o servidor, para atualiz
 
 ## Testes
 ### Teste com um cliente
-
+![Teste com um cliente](https://ultravic.github.com/cursor_stream/docs/images/)
+```log
+um log aqui
+```
 ### Teste com 3 clientes simultâneos
 
 ### Teste com tempo de envio de 3 segundos

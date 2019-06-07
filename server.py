@@ -74,14 +74,19 @@ def on_scroll(x, y, dx, dy):
     logger.debug('Scrolled {0} at {1}'.format(
         'down' if dy < 0 else 'up', (x, y)))
 
+def helper(argv):
+    '''
+    Prints the instructions of the server.
+    '''
+    print('Usage: ' + settings.MESSAGES['usage_server'])
+    print('> Optional parameters:')
+    for param in settings.MESSAGES['descr_server']:
+        print('\t - ' + param)
+    exit(0)
 
 def init(argv):
     if '--help' in argv:
-        print('Usage: ' + settings.MESSAGES['usage_server'])
-        print('> Optional parameters:')
-        for param in settings.MESSAGES['descr_server']:
-            print('\t - ' + param)
-        exit(0)
+        helper(argv)        
 
     # Verify if any option is in the arguments
     if '-p' in argv:

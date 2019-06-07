@@ -23,9 +23,6 @@ logging.basicConfig(filename=settings.LOGGING_FILE_CLIENT,
                     datefmt=settings.LOGGING_DFT)
 logger = logging.getLogger(__name__)
 
-# Connection initialization function
-
-
 def connection(HOST, PORT, GROUP):
     '''
     Create a socket of UDP/IP. The socket is set to multicast format.
@@ -86,22 +83,23 @@ def plot(data, title, save_path):
     else:
         plt.show()
 
-
-def showHelp(argv):
-    if '--help' in argv or '-h' not in argv:
-        print('Usage: ' + settings.MESSAGES['usage_client'])
-        print('> Needed parameters :')
-        for param in settings.MESSAGES['descr_client']['needed']:
-            print('\t - ' + param)
-        print('> Optional parameters:')
-        for param in settings.MESSAGES['descr_client']['optional']:
-            print('\t - ' + param)
-        exit(0)
+def helper(argv):
+    '''
+    Prints the instructions of the client.
+    '''
+    print('Usage: ' + settings.MESSAGES['usage_client'])
+    print('> Needed parameters :')
+    for param in settings.MESSAGES['descr_client']['needed']:
+        print('\t - ' + param)
+    print('> Optional parameters:')
+    for param in settings.MESSAGES['descr_client']['optional']:
+        print('\t - ' + param)
+    exit(0)
 
 
 def init(argv):
-    # Checks if there is a -h on the script arguments
-    showHelp(argv)
+    if '--help' in argv or '-h' not in argv:
+        helper(argv)
 
     # Verify if any option is in the arguments
     host = argv[argv.index('-h') + 1]

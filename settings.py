@@ -15,7 +15,7 @@ DEFAULT_MCAST_TTL = 2
 DEFAULT_TIME = 0.0001
 
 # Default Window Size
-DEFAULT_WINDOW_SIZE = 100
+DEFAULT_WINDOW_SIZE = 15
 
 # Define if will use specific group or all
 IS_ALL_GROUPS = True
