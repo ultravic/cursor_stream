@@ -13,14 +13,14 @@ import matplotlib.pyplot as plt
 import scipy.ndimage.filters as filters
 
 # Disable matplotlib logging debug
-mpl_logger = logging.getLogger('matplotlib') 
+mpl_logger = logging.getLogger('matplotlib')
 mpl_logger.setLevel(logging.WARNING)
 
-logging.basicConfig(filename = settings.LOGGING_FILE_CLIENT,
-            filemode = 'w',
-            format = settings.LOGGING_FORMAT, 
-            level = settings.LOGGING_LEVEL, 
-            datefmt = settings.LOGGING_DFT)
+logging.basicConfig(filename=settings.LOGGING_FILE_CLIENT,
+                    filemode='w',
+                    format=settings.LOGGING_FORMAT,
+                    level=settings.LOGGING_LEVEL,
+                    datefmt=settings.LOGGING_DFT)
 logger = logging.getLogger(__name__)
 
 # Connection initialization function
@@ -53,12 +53,29 @@ def connection(HOST, PORT, GROUP):
 
     return sock
 
+
+def verifyMissingPackets(seems_missing, missing_cnt, data):
+    # print(*seems_missing)
+    a = False
+    # Verify if "missing" packets are realy missed (farther than an window size from the last packet)
+    for miss in seems_missing:
+        if(data['id'] > miss + settings.DEFAULT_WINDOW_SIZE):
+            logger.critical("Missing packet id:%d", miss)
+            missing_cnt += 1
+            del seems_missing[seems_missing.index(miss)]
+            a = True
+    if(a):
+        logger.critical("Packet triggered missing :%d", data['id'])
+    
+    return missing_cnt
+
+
 def plot(data, title, save_path):
     '''
     Creates a graphical visualization of the data. It's possible to send
     the graphic result to a file.
     '''
-    plt.figure(figsize=(10,6), dpi=100)
+    plt.figure(figsize=(10, 6), dpi=100)
     plt.imshow(data, cmap='hot')
     plt.xlabel("Width")
     plt.ylabel("Height")
@@ -69,7 +86,8 @@ def plot(data, title, save_path):
     else:
         plt.show()
 
-def init(argv):
+
+def showHelp(argv):
     if '--help' in argv or '-h' not in argv:
         print('Usage: ' + settings.MESSAGES['usage_client'])
         print('> Needed parameters :')
@@ -79,6 +97,11 @@ def init(argv):
         for param in settings.MESSAGES['descr_client']['optional']:
             print('\t - ' + param)
         exit(0)
+
+
+def init(argv):
+    # Checks if there is a -h on the script arguments
+    showHelp(argv)
 
     # Verify if any option is in the arguments
     host = argv[argv.index('-h') + 1]
@@ -92,7 +115,7 @@ def init(argv):
         grp = settings.DEFAULT_MCAST_GRP
 
     try:
-        sock = connection(host, port, grp) 
+        sock = connection(host, port, grp)
         logger.info('Socket connection succeeded')
     except:
         logger.error('Error on socket connection')
@@ -102,94 +125,125 @@ def init(argv):
     try:
         packets = []
         missing = []
-        off_order = []
+        missing_cnt = 0
+        off_order = 0
         packet_counter = 0
         scroll_counter = 0
         click_counter = 0
         click_vfy = False
-        packet_vfy = 0
+        greatest_pack = 0
 
         # Wait for first packet
         received = sock.recvfrom(280)
         data = pickle.loads(received[0])
 
-        logger.info("Firs packet received id:%d", data['id'])
-        packet_vfy = data['id']
+        logger.info("First packet received id:%d", data['id'])
+        greatest_pack = data['id']
 
         # Print actions to debug
         logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
         if data['mouse_pressed'] and not click_vfy:
             click_counter += 1
             click_vfy = True
-            logger.debug('{0} at {1}'.format('Pressed', data['mouse_position']))
+            logger.debug('{0} at {1}'.format(
+                'Pressed', data['mouse_position']))
         elif not data['mouse_pressed'] and click_vfy:
             click_vfy = False
-            logger.debug('{0} at {1}'.format('Released', data['mouse_position']))
+            logger.debug('{0} at {1}'.format(
+                'Released', data['mouse_position']))
         if data['mouse_scrolled'][0]:
             scroll_counter += 1
-            logger.debug('Scrolled {0} at {1}'.format(data['mouse_scrolled'][1], data['mouse_position']))
-        
+            logger.debug('Scrolled {0} at {1}'.format(
+                data['mouse_scrolled'][1], data['mouse_position']))
+
         packets.append(data)
         packet_counter += 1
-
         while True:
             received = sock.recvfrom(280)
             data = pickle.loads(received[0])
 
-            # Verify missing packets and out of order packets
-            if data['id'] != packet_vfy + 1:
-                missing.append(data)
-                logger.critical("Missing packet id:%d", (packet_vfy + 1))
-                packet_vfy = data['id']
-            else:
-                packet_vfy += 1
+            missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
 
-            if data['id'] < packet_vfy:
-                off_order.append(data)
-                logging.critical("Out of order packet id:%d", data['id'])
+            # Verify if the packet is ahead of time
+            if data['id'] > greatest_pack + 1:
+                logger.critical(
+                    "Packet ahead of time id:%d -- curr: %d", data['id'], greatest_pack)
+                for miss in range(greatest_pack + 1, data['id']):
+                    missing.append(miss)
+                # del packets[packets.index(data)]
+                greatest_pack = data['id']
+            else:
+                # Verify if is out of order
+                if data['id'] in missing:
+                    idx = missing.index(data['id'])
+                    logger.critical("Packet out of order id:%d",
+                                    missing[idx]['id'])
+                    off_order += 1
+                    del missing[idx]
+                else:
+                    if ((np.random.randint(0, 100) % 100) < 10):
+                        # Simulate a 1 % packet loss rate
+                        pass
+                        # printf("Pretending to have dropped a packet!\n");}
+                    else:
+                        #  handle the incoming packet as usual
+                        logger.critical("Packet in order:%d", data['id'])
+                        greatest_pack = data['id']
 
             # Print actions to debug
             logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
             if data['mouse_pressed'] and not click_vfy:
                 click_counter += 1
                 click_vfy = True
-                logger.debug('{0} at {1}'.format('Pressed', data['mouse_position']))
+                logger.debug('{0} at {1}'.format(
+                    'Pressed', data['mouse_position']))
             elif not data['mouse_pressed'] and click_vfy:
                 click_vfy = False
-                logger.debug('{0} at {1}'.format('Released', data['mouse_position']))
+                logger.debug('{0} at {1}'.format(
+                    'Released', data['mouse_position']))
             if data['mouse_scrolled'][0]:
                 scroll_counter += 1
-                logger.debug('Scrolled {0} at {1}'.format(data['mouse_scrolled'][1], data['mouse_position']))
-            
+                logger.debug('Scrolled {0} at {1}'.format(
+                    data['mouse_scrolled'][1], data['mouse_position']))
+
             packets.append(data)
             packet_counter += 1
+            # print(missing_cnt)
+
+        missing_cnt = verifyMissingPackets(missing, missing_cnt, data)
+        
         click_vfy = False
     except KeyboardInterrupt:
         if packet_counter:
             logger.info('Last packet received id:%d', data['id'])
             logger.info('Number of packets received is %d', packet_counter)
-            logger.info('Number of packets missing is %d', len(missing))
-            logger.info('Number of packets out of order is %d', len(off_order))
+            logger.info('Number of packets missing is %d', missing_cnt)
+            logger.info('Number of packets out of order is %d', off_order)
             logger.info('Number of clicks received is %d', click_counter)
             logger.info('Number of scrolls received is %d', scroll_counter)
 
             # Create a base array
             grid = np.zeros(data['screen_size'][1] * data['screen_size'][0])
-            grid = grid.reshape((data['screen_size'][1], data['screen_size'][0]))
+            grid = grid.reshape(
+                (data['screen_size'][1], data['screen_size'][0]))
             grid_pos = grid.copy()
             grid_scr = grid.copy()
             grid_prd = grid.copy()
 
             # Update pixels
             for packet in packets:
-                grid_pos[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+                grid_pos[packet['mouse_position'][1]
+                         ][packet['mouse_position'][0]] += 10
                 if packet['mouse_scrolled'][0]:
-                    grid_scr[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+                    grid_scr[packet['mouse_position'][1]
+                             ][packet['mouse_position'][0]] += 10
                 if packet['mouse_pressed'] and not click_vfy:
                     click_vfy = True
-                    grid_prd[packet['mouse_position'][1]][packet['mouse_position'][0]] += 10
+                    grid_prd[packet['mouse_position'][1]
+                             ][packet['mouse_position'][0]] += 10
                 elif packet['mouse_pressed'] and click_vfy:
-                    grid_prd[packet['mouse_position'][1]][packet['mouse_position'][0]] += 1
+                    grid_prd[packet['mouse_position'][1]
+                             ][packet['mouse_position'][0]] += 1
                 elif not packet['mouse_pressed'] and click_vfy:
                     click_vfy = False
 
@@ -197,7 +251,7 @@ def init(argv):
             grid_pos = filters.gaussian_filter(grid_pos, sigma=10)
             grid_scr = filters.gaussian_filter(grid_scr, sigma=10)
             grid_prd = filters.gaussian_filter(grid_prd, sigma=10)
-            
+
             # Plot the graphics to file or show
             if '-simage' in argv:
                 plot(grid_pos, 'Cursor Heatmap', settings.SAVE_CURSOR)
@@ -212,7 +266,8 @@ def init(argv):
 
         sock.close()
         logger.info('Socket closed')
-        logger.info('Closing server')
+        logger.info('Closing client')
         exit(1)
+
 
 init(sys.argv)
