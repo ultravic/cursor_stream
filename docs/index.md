@@ -12,26 +12,29 @@ Os requisitos para a execução dos códigos são as bibliotecas:
 - logging
 
 É possível fazer a instalação dessas bibliotecas utilizando o pip da forma:
-> $ pip3 install -r requirements.txt
+`pip3 install -r requirements.txt`
 
-## Funcionamento
-### Configurações
-Os programas possuem um arquivo de configurações chamado **settings.py**. Nesse arquivo é
-possível definir porta, grupo e ttl padrão, como também o tempo de transmissão dos pacotes. Também define-se os arquivos em que serão salvos os *logs* do servidor e do cliente e os arquivos dos gráficos dos mapas de calor. Por fim, também são definidos 
-os tipos de mensagens de ajuda, o padrão da mensagem dos *logs* e o nível da mensagem dos
-logs a serem apresentadas.
+## Configurações
+Os programas possuem um arquivo de configurações chamado [settings.py](https://github.com/ultravic/cursor_stream/blob/master/settings.py). Nesse arquivo é possível definir porta, grupo e ttl padrão, como também o tempo de transmissão dos pacotes. Também define-se os arquivos em que serão salvos os *logs* do servidor e do cliente e os arquivos dos gráficos dos mapas de calor. Por fim, também são definidos os tipos de mensagens de ajuda, o padrão da mensagem dos *logs* e o nível da mensagem dos logs a serem apresentadas.
 
-A apresentação do *log* depende do nível definido no **settings.py**. Os *logs* são produzidos utilizando a biblioteca *logging*, dessa forma, os niveis de mensagens são: *DEBUG* - apresentará as informações de inicializações, finalizações, erros e pacotes perdidos e fora de ordem, eventos do mouse; *INFO* - apresentará as informações de inicializações, finalizações, erros e pacotes perdidos e fora de ordem; *CRITICAL* - apresentará as informações de erros e pacotes perdidos e fora de ordem; e *ERROR*.
+A apresentação do *log* depende do nível definido no *settings*. Os *logs* são produzidos utilizando a biblioteca *logging*, dessa forma, os niveis de mensagens são: *DEBUG* - apresentará as informações de inicializações, finalizações, erros e pacotes perdidos e fora de ordem, eventos do mouse; *INFO* - apresentará as informações de inicializações, finalizações, erros e pacotes perdidos e fora de ordem; *CRITICAL* - apresentará as informações de erros e pacotes perdidos e fora de ordem; e *ERROR*.
 
+## Execuções
 ### Servidor
-O servidor está implementado no arquivo **server.py**. Para saber como executar o servidor na linha de comando, basta digitar:
-> $ python3 server.py --help
+O servidor está implementado no arquivo [server.py](https://github.com/ultravic/cursor_stream/blob/master/server.py). Para saber como executar o servidor na linha de comando, basta digitar:
+`python3 server.py --help`
 Esse comando apresentará as opções para utilização e os seus significados.
-> $ python3 <server> [[-p <port>], [-t <ttl>], [-g <group>], [-i <seconds>]]
-O servidor possui em **settings.py** as variáveis padrão para cada opção, dessa forma, basta executar somente o arquvio servidor. As opções do terminal são: *port* - a porta a ser utilizada; *ttl* - time to live dos pacotes; *group* - endereço de grupo para multicast; *seconds* - tempo entre envio dos pacotes. 
+`server [[-p <port>], [-t <ttl>], [-g <group>], [-i <seconds>]]`
+O servidor possui em *settings* as variáveis padrão para cada opção, dessa forma, basta executar somente o arquivo servidor. As opções do terminal são: *port* - a porta a ser utilizada; *ttl* - time to live dos pacotes; *group* - endereço de grupo para multicast; *seconds* - tempo entre envio dos pacotes.
 
 ### Cliente
-O cliente está implementado no arquivo **client.py**
+O cliente está implementado no arquivo [client.py](https://github.com/ultravic/cursor_stream/blob/master/client.py). Para saber como executar o cliente na linha de comando, basta digitar:
+`python3 client.py --help`
+Esse comando apresentará as opções para utilização e os seus significados.
+`<client> -h <server_name> [[-p <port>], [-g <group>], [-simage]]`
+O cliente possui em *settings* as variáveis padrão para cada opção, exceto o nome do servidor à conectar e a opção de salvar imagem. Assim, uma execução do cliente deve possuir a opção *-h* e o nome do servidor. A opção *-simage* serve para salvar as imagens dos gráficos resultantes, sem essa opção, os gráficos são apresentados na tela.
+
+## Funcionamento
 
 ## Testes
 ### Teste com um cliente
@@ -40,4 +43,4 @@ O cliente está implementado no arquivo **client.py**
 
 ### Teste com tempo de envido de 3 segundos
 
-# Conclusão
+## Conclusão
