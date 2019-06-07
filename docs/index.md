@@ -35,7 +35,12 @@ Esse comando apresentará as opções para utilização e os seus significados.
 O cliente possui em *settings* as variáveis padrão para cada opção, exceto o nome do servidor à conectar e a opção de salvar imagem. Assim, uma execução do cliente deve possuir a opção *-h* e o nome do servidor. A opção *-simage* serve para salvar as imagens dos gráficos resultantes, sem essa opção, os gráficos são apresentados na tela.
 
 ## Funcionamento
-
+### Servidor
+O servidor faz inicialmente a verificação dos campos de opções caso seja necessário atualizar as variáveis padrão. Com isso, é criado um socket a partir da função connection.
+```
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, TTL)
+```
 ## Testes
 ### Teste com um cliente
 
