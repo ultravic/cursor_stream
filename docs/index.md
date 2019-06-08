@@ -17,8 +17,6 @@ Os requisitos para a execução dos códigos são as bibliotecas:
 
 ## Configurações
 
-[**implementação**](settings.py.md)
-
 Os programas possuem um arquivo de configurações chamado [settings.py](https://github.com/ultravic/cursor_stream/blob/master/settings.py). Nesse arquivo é possível definir porta, grupo e ttl padrão, como também o tempo de transmissão dos datagramas. Também define-se os arquivos em que serão salvos os *logs* do servidor e do cliente e os arquivos dos gráficos dos mapas de calor. Por fim, também são definidos os tipos de mensagens de ajuda, o padrão da mensagem dos *logs* e o nível da mensagem dos logs a serem apresentadas.
 
 A apresentação do *log* depende do nível definido no *settings*. Os *logs* são produzidos utilizando a biblioteca *logging*, dessa forma, os niveis de mensagens são: *DEBUG* - apresentará as informações de inicializações, finalizações, erros e datagramas perdidos e fora de ordem, eventos do mouse; *INFO* - apresentará as informações de inicializações, finalizações, erros e datagramas perdidos e fora de ordem; *CRITICAL* - apresentará as informações de erros e datagramas perdidos e fora de ordem; e *ERROR*.
@@ -53,8 +51,6 @@ Para finalizar o cliente, *Ctrl + C*.
 ## Funcionamento
 ### Servidor
 
-[**implementação**](server.py.md)
-
 O servidor faz inicialmente a verificação dos campos de opções caso seja necessário atualizar as variáveis padrão. Com isso, é criado um *socket* a partir da função *connection*. Esse *socket* é criado com o protocolo *UDP* e com a opção *multicast*. Após isso, é iniciado uma *thread* que ficará recebendo eventos do mouse. A *thread* atualizará a estrutura *data*, que contém as informações dos eventos que serão enviados em cada pacote pelo socket.
 
 ```python
@@ -70,8 +66,6 @@ data = {
 Com a variável *data* atualizada, o *socket* então envia o pacote para o grupo e porta definidos. Essas operações repetem-se a cada intervalo de tempo (definido em *settings* ou passado como parâmetro) até o servidor finalizar.
 
 ### Cliente
-
-[**implementação**](client.py.md)
 
 O cliente faz as verificações de opções, assim como o servidor, para atualizar possíveis variáveis. A conexão é criada na função *connection*, criando um *socket* *UDP* e vinculando-o ao grupo e porta definidos. Com isso, o cliente ficará esperando para receber o primeiro pacote. Esse pacote atualizará algumas variáveis utilitárias, escreverá possíveis mensagens de *log* e será guardado em um vetor de todos os datagramas. O próximo passo é um laço que fará as mesmas instruções de anteriormente, porém, verificará por datagramas perdidos e fora de ordem com um sistema de janela. Após a finalização do cliente, será feito as operações finais. Essas operações consistem em criar os gráficos com os dados recebidos para cada tipo de evento utilizando as bibliotecas *numpy* e *matplotlib*.
 
