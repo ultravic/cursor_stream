@@ -1,2 +1,5 @@
 theme: jekyll-theme-leap-day
 markdown: CommonMarkGhPages
+commonmark:
+  options: ["SMART", "FOOTNOTES"]
+  extensions: ["strikethrough", "autolink", "table", "tagfilter"]
