@@ -28,7 +28,6 @@ data = {
     'screen_size': (0, 0),
 }
 
-
 def connection(TTL):
     '''
     Create a socket of UDP/IP. The socket is set to multicast format.
@@ -45,7 +44,6 @@ def connection(TTL):
 
     return sock
 
-
 def on_move(x, y):
     ''' 
     On event, this function get the position (x,y) from
@@ -53,7 +51,6 @@ def on_move(x, y):
     '''
     data['mouse_position'] = (x, y)
     logger.debug('Pointer moved to {0}'.format((x, y)))
-
 
 def on_click(x, y, button, pressed):
     ''' 
@@ -63,7 +60,6 @@ def on_click(x, y, button, pressed):
     data['mouse_pressed'] = pressed
     logger.debug('{0} at {1}'.format(
         'Pressed' if pressed else 'Released', (x, y)))
-
 
 def on_scroll(x, y, dx, dy):
     ''' 
@@ -155,6 +151,5 @@ def init(argv):
         logger.info('Socket closed')
         logger.info('Closing server')
         exit(1)
-
 
 init(sys.argv)

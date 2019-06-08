@@ -50,7 +50,6 @@ def connection(HOST, PORT, GROUP):
 
     return sock
 
-
 def plot(data, title, save_path):
     '''
     Creates a graphical visualization of the data. It's possible to send
@@ -144,7 +143,6 @@ def init(argv):
             received = sock.recvfrom(280)
             data = pickle.loads(received[0])
 
-
             # Verify if the packet is ahead of time
             if data['id'] != greatest_pack + 1:
                 # Verify if is out of order
@@ -159,11 +157,9 @@ def init(argv):
                         logger.critical("Missing packet id:%d", miss)
                         missing.append(miss)
                     missing_cnt += (data['id'] - greatest_pack+1)
-                    greatest_pack = data['id']
-               
+                    greatest_pack = data['id']               
             else:
                 greatest_pack += 1
-
 
             # Print actions to debug
             logger.debug('Pointer moved to {0}'.format(data['mouse_position']))
@@ -185,7 +181,6 @@ def init(argv):
             packet_counter += 1
             # print(missing_cnt)
 
-        
         click_vfy = False
     except KeyboardInterrupt:
         if packet_counter:
@@ -242,6 +237,5 @@ def init(argv):
         logger.info('Socket closed')
         logger.info('Closing client')
         exit(1)
-
 
 init(sys.argv)

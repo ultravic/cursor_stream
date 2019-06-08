@@ -1,12 +1,11 @@
 # Servidor/Client UDP/IP: Stream de eventos do mouse
 Os programas aqui discutidos implementam um sistema de servidor e de cliente *UDP/IP* multicast para um stream de eventos do mouse. Os eventos trabalhados são o da posição do mouse, pressionar e soltar o botão esquerdo e a rolagem. O objetivo final é criar um mapa de calor para cada tipo de evento para analisar essa transmissão.
 
-Esse é um trabalho desenvolvido para a disciplina de Redes de Computadores 2
+Esse é um trabalho desenvolvido para a disciplina de Redes de Computadores 2.
 
 Por 
 - Victor Picussa 				- GRR20163068 	@ultravic
 - Pedro Luiz de Souza Moreira 	- GRR20163064 	@plusmoreira
-
 
 ## Requisitos
 Os requisitos para a execução dos códigos são as bibliotecas:
@@ -74,13 +73,12 @@ Com a variável *data* atualizada, o *socket* então envia o pacote para o grupo
 
 ### Cliente
 
-O cliente faz as verificações de opções, assim como o servidor, para atualizar possíveis variáveis. A conexão é criada na função *connection*, criando um *socket* *UDP* e vinculando-o ao grupo e porta definidos. Com isso, o cliente ficará esperando para receber o primeiro pacote. Esse pacote atualizará algumas variáveis utilitárias, escreverá possíveis mensagens de *log* e será guardado em um vetor de todos os datagramas. O próximo passo é um laço que fará as mesmas instruções de anteriormente, porém, verificará por datagramas perdidos e fora de ordem com um sistema de janela. Após a finalização do cliente, será feito as operações finais. Essas operações consistem em criar os gráficos com os dados recebidos para cada tipo de evento utilizando as bibliotecas *numpy* e *matplotlib*.
+O cliente faz as verificações de opções, assim como o servidor, para atualizar possíveis variáveis. A conexão é criada na função *connection*, criando um *socket* *UDP* e vinculando-o ao grupo e porta definidos. Com isso, o cliente ficará esperando para receber o primeiro pacote. Esse pacote atualizará algumas variáveis utilitárias, escreverá possíveis mensagens de *log* e será guardado em um vetor de todos os datagramas. O próximo passo é um laço que fará as mesmas instruções de anteriormente, porém, verificará por datagramas perdidos e fora de ordem. Após a finalização do cliente, será feito as operações finais. Essas operações consistem em criar os gráficos com os dados recebidos para cada tipo de evento utilizando as bibliotecas *numpy* e *matplotlib*.
 
-# Conclusão
-Após realizarmos alguns testes, chegamos a conclusão que o UDP se mostra bem consistente com transmissão entre hosts da mesma rede, ocorrendo poucos datagramas, e não mostrando em nenhum momento datagramas fora de ordem.
+## Conclusão
+Após realizarmos alguns testes, chegamos a conclusão que o UDP se mostra bem consistente com transmissão entre hosts da mesma rede, ocorrendo poucos datagramas e não mostrando em nenhum momento datagramas fora de ordem.
 
 Para os fins da aplicação (geração de heatmaps) os resultados sairam como o esperado.
 
-
-# Testes
+## Testes
 [Clique aqui para ir para os testes](tests.md)

@@ -1,7 +1,6 @@
 # Settings used by the server and client module
 
 import logging
-import socket
 
 # Default multicast group
 DEFAULT_MCAST_GRP = '224.1.1.1'
@@ -12,28 +11,26 @@ DEFAULT_MCAST_PORT = 5007
 # Default TTL
 DEFAULT_MCAST_TTL = 2
 
+# Default sent time
 DEFAULT_TIME = 0.0001
-
-# Default Window Size
-DEFAULT_WINDOW_SIZE = 1
 
 # Define if will use specific group or all
 IS_ALL_GROUPS = True
 
 # File path to save the cursor heatmap graphic
-SAVE_CURSOR = 'images/' + socket.gethostname() + '_cursor_heat.jpg'
+SAVE_CURSOR = 'cursor_heat.jpg'
 
 # File path to save the scrolls heatmap graphic
-SAVE_SCROLL = 'images/' + socket.gethostname() + '_scroll_heat.jpg'
+SAVE_SCROLL = 'scroll_heat.jpg'
 
 # File path to save the clicks heatmap graphic
-SAVE_PRESS = 'images/' + socket.gethostname() + '_press_heat.jpg'
+SAVE_PRESS = 'press_heat.jpg'
 
 # File path to server log
-LOGGING_FILE_SERVER = 'logs/server.log'
+LOGGING_FILE_SERVER = 'server.log'
 
 # File path to client log
-LOGGING_FILE_CLIENT = 'logs/' + socket.gethostname() + '_client.log'
+LOGGING_FILE_CLIENT = 'client.log'
 
 # Logging definitions
 LOGGING_LEVEL = logging.INFO
