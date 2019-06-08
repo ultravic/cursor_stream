@@ -2,9 +2,10 @@
 Os programas aqui discutidos implementam um sistema de servidor e de cliente *UDP/IP* multicast para um stream de eventos do mouse. Os eventos trabalhados são o da posição do mouse, pressionar e soltar o botão esquerdo e a rolagem. O objetivo final é criar um mapa de calor para cada tipo de evento para analisar essa transmissão.
 
 Esse é um trabalho desenvolvido para a disciplina de Redes de Computadores 2
+
 Por 
-	Victor Picussa 				- GRR20163068 	@ultravic
-	Pedro Luiz de Souza Moreira - GRR20163064 	@plusmoreira
+- Victor Picussa 				- GRR20163068 	@ultravic
+- Pedro Luiz de Souza Moreira 	- GRR20163064 	@plusmoreira
 
 
 ## Requisitos
