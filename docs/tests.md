@@ -44,7 +44,7 @@ Os demais terão links para os logs.
 ### Imagens
 | Cursor Heatmap  | Click Heatmap | Scroll Heatmap |
 | ------------- | ------------- | ------------- |
-| ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_01/h18_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_01/h18_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_01/h18_scroll_heat.jpg)  |
+| ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_01/h18_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_01/h18_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_01/h18_scroll_heat.jpg)  |
 
 
 ## Teste 2 -  3 clientes simultâneos
@@ -61,9 +61,9 @@ Os clientes tiveram resultados similares, porém é possível perceber a perda d
 ### Imagens
 | Heatmap | Host 15 | Host 16 | Host 18 |
 | :------------ | ------------- | ------------- | ------------- |
-| Cursor  | ![Cursor Heatmap h15](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h15_cursor_heat.jpg) | ![Cursor Heatmap h16](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h16_cursor_heat.jpg) | ![Cursor Heatmap h18](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h18_cursor_heat.jpg) |
-| Click  | ![Click Heatmap h15](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h15_press_heat.jpg) | ![Click Heatmap h16](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h16_press_heat.jpg) | ![Click Heatmap h18](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h18_press_heat.jpg) |
-| Scroll | ![Scroll Heatmap h15](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h15_scroll_heat.jpg) | ![Scroll Heatmap h16](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h16_scroll_heat.jpg) | ![Scroll Heatmap h18](https://ultravic.github.com/cursor_stream/docs/tests/test_02/h18_scroll_heat.jpg) |
+| Cursor  | ![Cursor Heatmap h15](https://ultravic.github.com/cursor_stream/tests/test_02/h15_cursor_heat.jpg) | ![Cursor Heatmap h16](https://ultravic.github.com/cursor_stream/tests/test_02/h16_cursor_heat.jpg) | ![Cursor Heatmap h18](https://ultravic.github.com/cursor_stream/tests/test_02/h18_cursor_heat.jpg) |
+| Click  | ![Click Heatmap h15](https://ultravic.github.com/cursor_stream/tests/test_02/h15_press_heat.jpg) | ![Click Heatmap h16](https://ultravic.github.com/cursor_stream/tests/test_02/h16_press_heat.jpg) | ![Click Heatmap h18](https://ultravic.github.com/cursor_stream/tests/test_02/h18_press_heat.jpg) |
+| Scroll | ![Scroll Heatmap h15](https://ultravic.github.com/cursor_stream/tests/test_02/h15_scroll_heat.jpg) | ![Scroll Heatmap h16](https://ultravic.github.com/cursor_stream/tests/test_02/h16_scroll_heat.jpg) | ![Scroll Heatmap h18](https://ultravic.github.com/cursor_stream/tests/test_02/h18_scroll_heat.jpg) |
 
 ## Teste 3 - Tempo de envio de 3 segundos
 Um teste com envio de poucos datagramas (a cada 3 segundos).
@@ -76,7 +76,7 @@ Muita informação foi perdida (não datagramas), gerando heatmaps inconsistente
 ### Imagens
 | Cursor Heatmap  | Click Heatmap | Scroll Heatmap |
 | ------------- | ------------- | ------------- |
-| ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_03/h16_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_03/h16_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_03/h16_scroll_heat.jpg)  |
+| ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_03/h16_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_03/h16_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_03/h16_scroll_heat.jpg)  |
 
 
 ## Teste 4 - 3 sessões de envio com tempo entre datagramas variável
@@ -93,7 +93,7 @@ Quando um servidor reinicia a transmissão, acabamos por não limpar algumas est
 ### Imagens
 | Cursor Heatmap  | Click Heatmap | Scroll Heatmap |
 | ------------- | ------------- | ------------- |
-| ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_04/h16_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_04/h16_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/docs/tests/test_04/h16_scroll_heat.jpg)  |
+| ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_04/h16_cursor_heat.jpg) | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_04/h16_press_heat.jpg)  | ![Heatmap](https://ultravic.github.com/cursor_stream/tests/test_04/h16_scroll_heat.jpg)  |
 
 
 
