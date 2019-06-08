@@ -2,7 +2,7 @@
 
 # Testes
 Os testes abaixo foram realizados no laboratório 1-2 do departamento de informática da UFPR em 4 máquinas diferentes.
-O servidor foi a máquina h17 em todos os testes.
+O servidor foi a máquina *h17* em todos os testes.
 
 ## Teste 01: 1 - 1 cliente
 Esse é um teste simples, apenas para demonstrar o funcionamento do sistema.
@@ -59,10 +59,11 @@ Os clientes tiveram resultados similares, porém é possível perceber a perda d
 | Heatmap | Host 15 | Host 16 | Host 18 |
 | :------------ | ------------- | ------------- | ------------- |
 | Cursor  | ![Cursor Heatmap h15](https://ultravic.github.io/cursor_stream/tests/test_02/h15_cursor_heat.jpg) | ![Cursor Heatmap h16](https://ultravic.github.io/cursor_stream/tests/test_02/h16_cursor_heat.jpg) | ![Cursor Heatmap h18](https://ultravic.github.io/cursor_stream/tests/test_02/h18_cursor_heat.jpg) |
+| [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h15_cursor_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h16_cursor_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h18_cursor_heat.jpg) |
 | Click  | ![Click Heatmap h15](https://ultravic.github.io/cursor_stream/tests/test_02/h15_press_heat.jpg) | ![Click Heatmap h16](https://ultravic.github.io/cursor_stream/tests/test_02/h16_press_heat.jpg) | ![Click Heatmap h18](https://ultravic.github.io/cursor_stream/tests/test_02/h18_press_heat.jpg) |
+| [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h15_press_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h16_press_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h18_press_heat.jpg) |
 | Scroll | ![Scroll Heatmap h15](https://ultravic.github.io/cursor_stream/tests/test_02/h15_scroll_heat.jpg) | ![Scroll Heatmap h16](https://ultravic.github.io/cursor_stream/tests/test_02/h16_scroll_heat.jpg) | ![Scroll Heatmap h18](https://ultravic.github.io/cursor_stream/tests/test_02/h18_scroll_heat.jpg) |
-
-As imagens originais desse teste encontram-se em: [Imagens Originais](https://github.com/ultravic/cursor_stream/tree/master/docs/tests/test_02)
+| [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h15_scroll_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h16_scroll_heat.jpg) | [Imagem Original](https://ultravic.github.io/cursor_stream/tests/test_02/h18_scroll_heat.jpg) |
 
 ## Teste 03: Tempo de envio de 3 segundos
 Um teste com envio de poucos datagramas (a cada 3 segundos). Muita informação foi perdida (não datagramas), gerando heatmaps inconsistentes.
