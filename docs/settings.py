@@ -1,3 +1,4 @@
+```python3
 # Settings used by the server and client module
 
 import logging
@@ -60,3 +61,4 @@ MESSAGES = {
         ]
     }
 }
+```

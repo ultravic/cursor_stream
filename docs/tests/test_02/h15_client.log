@@ -1,0 +1,39 @@
+06-07-2019 19:47:32 [INFO]: Socket created
+06-07-2019 19:47:32 [INFO]: Socket connection succeeded
+06-07-2019 19:49:03 [INFO]: First packet received id:0
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100161
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100162
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100163
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100164
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100165
+06-07-2019 19:52:23 [CRITICAL]: Missing packet id:1100166
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239815
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239816
+06-07-2019 19:52:48 [CRITICAL]: Missing packet id:1239817
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309642
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309643
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309644
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309645
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309646
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309647
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309648
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309649
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309650
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309651
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309652
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309653
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309654
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309655
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309656
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309657
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309658
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309659
+06-07-2019 19:53:01 [CRITICAL]: Missing packet id:1309660
+06-07-2019 19:53:09 [INFO]: Last packet received id:1319810
+06-07-2019 19:53:09 [INFO]: Number of packets received is 1319783
+06-07-2019 19:53:09 [INFO]: Number of packets missing is 34
+06-07-2019 19:53:09 [INFO]: Number of packets out of order is 0
+06-07-2019 19:53:09 [INFO]: Number of clicks received is 297
+06-07-2019 19:53:09 [INFO]: Number of scrolls received is 52
+06-07-2019 19:53:11 [INFO]: Socket closed
+06-07-2019 19:53:11 [INFO]: Closing client

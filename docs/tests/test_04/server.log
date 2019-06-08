@@ -1,0 +1,24 @@
+// Sessão 1 - 3s
+06-07-2019 20:02:46 [INFO]: Socket created
+06-07-2019 20:02:46 [INFO]: Mouse listener started
+06-07-2019 20:02:49 [INFO]: First packet sent succefuly
+06-07-2019 20:03:14 [INFO]: Last packet sent id:8
+06-07-2019 20:03:14 [INFO]: Mouse listener closed
+06-07-2019 20:03:14 [INFO]: Socket closed
+06-07-2019 20:03:14 [INFO]: Closing server
+// Sessão 2 - 0.0001s
+06-07-2019 20:03:24 [INFO]: Socket created
+06-07-2019 20:03:24 [INFO]: Mouse listener started
+06-07-2019 20:03:24 [INFO]: First packet sent succefuly
+06-07-2019 20:03:48 [INFO]: Last packet sent id:137347
+06-07-2019 20:03:52 [INFO]: Mouse listener closed
+06-07-2019 20:03:52 [INFO]: Socket closed
+06-07-2019 20:03:52 [INFO]: Closing server
+// Sessão 3 - 1s
+06-07-2019 20:04:03 [INFO]: Socket created
+06-07-2019 20:04:03 [INFO]: Mouse listener started
+06-07-2019 20:04:04 [INFO]: First packet sent succefuly
+06-07-2019 20:04:36 [INFO]: Last packet sent id:32
+06-07-2019 20:04:36 [INFO]: Mouse listener closed
+06-07-2019 20:04:36 [INFO]: Socket closed
+06-07-2019 20:04:36 [INFO]: Closing server

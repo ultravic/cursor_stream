@@ -1,0 +1,11 @@
+06-07-2019 20:02:50 [INFO]: Socket created
+06-07-2019 20:02:50 [INFO]: Socket connection succeeded
+06-07-2019 20:02:52 [INFO]: First packet received id:1
+06-07-2019 20:04:47 [INFO]: Last packet received id:32
+06-07-2019 20:04:47 [INFO]: Number of packets received is 137389
+06-07-2019 20:04:47 [INFO]: Number of packets missing is -137353
+06-07-2019 20:04:47 [INFO]: Number of packets out of order is 0
+06-07-2019 20:04:47 [INFO]: Number of clicks received is 6
+06-07-2019 20:04:47 [INFO]: Number of scrolls received is 0
+06-07-2019 20:04:48 [INFO]: Socket closed
+06-07-2019 20:04:48 [INFO]: Closing client
