@@ -1,3 +1,5 @@
+[Voltar para a home](index.md)
+
 # Testes
 Os testes abaixo foram realizados no laboratório 1-2 do departamento de informática da UFPR em 4 máquinas diferentes.
 O servidor foi a máquina h17 em todos os testes.
